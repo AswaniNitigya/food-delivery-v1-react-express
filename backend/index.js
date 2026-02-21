@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser"
 import authRouter from "./routes/auth.routes.js"
 import cors from "cors" // used to connect frontend and backend 
 import workingcheck from "./utils/mail.js"
+import userRouter from "./routes/user.routes.js"
 
 // INITIALISE 
 const app = express()
@@ -24,7 +25,7 @@ app.use(cookieParser())
 
 
 app.use("/api/auth",authRouter) // ---> convert all the authRoutes with addition to give string ex /signup   to /api/auth/signup
-
+app.use("/api/user",userRouter)
 
 app.get("/",(req,res)=>{
     res.send("server running")

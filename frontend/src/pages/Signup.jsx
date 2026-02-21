@@ -3,8 +3,9 @@ import { FaEyeSlash, FaRegEye } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import axios from "axios";
-
-// importing icons
+import { GoogleAuthProvider } from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
+import { auth } from "../../utils/firebase";
 
 function Signup() {
   const primaryColor = "#ff4d2d";
@@ -37,6 +38,29 @@ function Signup() {
         { withCredentials: true },
       );
       console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleGoogleAuth = async () => {
+    if (!mobile) {
+      return alert("mobile number is req");
+    }
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    try {
+      const {data} = await axios.post(
+        "http://localhost:8000/api/auth/google-auth",
+        {
+          fullname: result.user.displayName,
+          email: result.user.email,
+          mobile: mobile,
+          role,
+        },
+        { withCredentials: true },
+      );
+      console.log(data);
     } catch (error) {
       console.log(error);
     }
@@ -186,7 +210,10 @@ function Signup() {
           >
             Sign up
           </button>
-          <button className="flex gap-2 items-center justify-center w-full mt-4 border p-2 rounded-4xl border-gray-300 hover:bg-gray-300 transition duration-200 cursor-pointer">
+          <button
+            className="flex gap-2 items-center justify-center w-full mt-4 border p-2 rounded-4xl border-gray-300 hover:bg-gray-300 transition duration-200 cursor-pointer"
+            onClick={handleGoogleAuth}
+          >
             <FcGoogle size={30} />
             <span> Sign up with Google</span>
           </button>

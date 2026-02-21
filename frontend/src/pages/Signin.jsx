@@ -3,6 +3,9 @@ import { FaEyeSlash, FaRegEye } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { signInWithPopup } from "firebase/auth";
+import { auth } from "../../utils/firebase";
+import { GoogleAuthProvider } from "firebase/auth";
 
 // importing icons
 
@@ -32,6 +35,26 @@ function Signin() {
         { withCredentials: true },
       );
       console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleGoogleAuth = async () => {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    try {
+      const { data } = await axios.post(
+        "http://localhost:8000/api/auth/google-auth",
+        {
+
+          email: result.user.email,
+
+
+        },
+        { withCredentials: true },
+      );
+      console.log(data);
     } catch (error) {
       console.log(error);
     }
@@ -67,6 +90,7 @@ function Signin() {
             Email
           </label>
           <input
+          required
             type="email"
             placeholder="Enter your email id"
             className="w-full border rounded-sm px-3 py-2 focus:outline-none focus:border-orange-500 not-focus: border-gray-200"
@@ -88,6 +112,7 @@ function Signin() {
           {/* password additional things like forgot and show */}
           <div className="relative">
             <input
+            required
               type={`${showPassword ? "text" : "password"}`}
               placeholder="Enter your password id"
               className="w-full border rounded-sm px-3 py-2 focus:outline-none focus:border-orange-500 not-focus: border-gray-200"
@@ -110,7 +135,7 @@ function Signin() {
 
         {/* Forgot password */}
         <div className="text-right mb-4 text-[#ff4d2d]">
-         <Link to="/forgot-password">Forgot Password</Link> 
+          <Link to="/forgot-password">Forgot Password</Link>
         </div>
 
         {/* sign in button + Google login   */}
@@ -121,7 +146,10 @@ function Signin() {
           >
             Sign in
           </button>
-          <button className="flex gap-2 items-center justify-center w-full mt-4 border p-2 rounded-4xl border-gray-300 hover:bg-gray-300 transition duration-200 cursor-pointer">
+          <button
+            className="flex gap-2 items-center justify-center w-full mt-4 border p-2 rounded-4xl border-gray-300 hover:bg-gray-300 transition duration-200 cursor-pointer"
+            onClick={handleGoogleAuth}
+          >
             <FcGoogle size={30} />
             <span> Sign in with Google</span>
           </button>

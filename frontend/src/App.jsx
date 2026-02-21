@@ -3,7 +3,9 @@ import { Route, Routes, useRoutes } from 'react-router-dom'
 import Signup from './pages/Signup'
 import Signin from './pages/Signin'
 import ForgotPass from './pages/ForgotPass'
+import useGetCurrentUser from './hooks/useGetCurrentUser'
 function App() {
+  useGetCurrentUser()
   return (
     <Routes>
       <Route path='/signup' element={<Signup/>}/>

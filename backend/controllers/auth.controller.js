@@ -18,7 +18,11 @@ const signup = async (req, res) => {
         .status(404)
         .json({ message: "password must be atleast 6 character long " });
     }
+    console.log(mobile);
+    console.log(mobile.length);
     if (mobile.length < 10) {
+      console.log(mobile);
+      console.log(mobile.length);
       return res
         .status(404)
         .json({ message: "mobile must be atleast 10 digit long " });
@@ -138,7 +142,7 @@ const verifyOTP = async (req, res) => {
     await user.save();
     return res.status(200).json({ message: "OTP verified succesfully" });
   } catch (error) {
-    console.log(error);
+    return res.status(400).json({ message: "error in verify otp" });
   }
 };
 
@@ -159,7 +163,36 @@ const resetPassword = async (req, res) => {
     await user.save()
     
     return res.status(200).json({ message: "Password reset succesfully " });
-  } catch (error) {}
+  } catch (error) {
+      return res.status(400).json({ message: "error in reset password" });
+  }
 };
 
-export { signup, signin, signout, sentOTP, verifyOTP, resetPassword };
+
+const googleAuth = async (req,res)=>{
+    try {
+      const {fullname,email,mobile,role}  = req.body
+      let user = await User.findOne({email})
+      if (!user) {
+          user= await User.create({
+            fullname,
+            email,
+            mobile,
+            role
+          })
+      }
+      const token = await generateToken(user._id);
+      // to store data in cookie
+      res.cookie("token", token, {
+      secure: false, // to run in http site also
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milisecond
+      httpOnly: true,
+    });
+    console.log("sign in with google backend hit");
+    return res.status(200).json(user)
+    } catch (error) {
+      return res.status(400).json({ message: "error in google auth" });
+    }
+}
+export { signup, signin, signout, sentOTP, verifyOTP, resetPassword,googleAuth };
